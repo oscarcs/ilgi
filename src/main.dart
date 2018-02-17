@@ -1,6 +1,10 @@
 import 'dart:io';
 import 'dart:async';
 
+import 'dart/content_type.dart';
+
+Directory root = new File(Platform.script.toFilePath()).parent;
+
 Future main() async {
     var server = await HttpServer.bind(
         InternetAddress.LOOPBACK_IP_V4,
@@ -28,9 +32,24 @@ void handleRequest(HttpRequest request) {
 
 void handleGet(HttpRequest request) {
     final response = request.response;
-    response.statusCode = HttpStatus.OK;
+    
+    String path = request.uri.path;
+    File file = getFile(path);
 
-    response
-        ..writeln('lol')
-        ..close();
+    file.exists().then((bool exists) {
+        if (exists) {
+            response.statusCode = HttpStatus.OK;
+            response.headers.contentType = getContentType(getExtension(path));
+            file.openRead().pipe(response);
+        }
+        else {
+            response.statusCode = 404;
+            response.close();
+        }
+    });
+}
+
+File getFile(String path) {
+    print(root.path + path);
+    return new File(root.path + path);
 }
