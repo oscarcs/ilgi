@@ -33,8 +33,10 @@ void handleRequest(HttpRequest request) {
 void handleGet(HttpRequest request) {
     final response = request.response;
     
-    String path = request.uri.path;
-    File file = getFile(path);
+    String path = processPath(request.uri.path);
+    File file = new File(path);
+
+    print('GET: ' + path);
 
     file.exists().then((bool exists) {
         if (exists) {
@@ -49,7 +51,10 @@ void handleGet(HttpRequest request) {
     });
 }
 
-File getFile(String path) {
-    print(root.path + path);
-    return new File(root.path + path);
+String processPath(String path) {
+    if (path == '/') {
+        path = "/index.html";
+    }
+    path = root.path + path; 
+    return path;
 }
