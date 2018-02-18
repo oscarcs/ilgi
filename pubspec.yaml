@@ -1,0 +1,3 @@
+name: ilgi
+dependencies:
+  sqlite: ^0.3.0
