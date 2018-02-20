@@ -1,11 +1,7 @@
 import 'dart:io';
 import 'dart:async';
-import 'package:sqlite/sqlite.dart';
 
 import 'dart/http.dart';
-
-Directory root = new File(Platform.script.toFilePath()).parent;
-Database database = new Database.inMemory();
 
 Future main() async {
     var server = await HttpServer.bind(

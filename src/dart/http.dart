@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'content_type.dart';
 
+Directory root = new File(Platform.script.toFilePath()).parent;
+
 void handleRequest(HttpRequest request) {
     if (request.method == 'GET') {
       handleGet(request);
