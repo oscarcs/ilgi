@@ -9,6 +9,15 @@ Future main() async {
         8080,
     );
 
+    // Create data directory relative to launch location.
+    Directory dataDir = new Directory('./data');
+    dataDir.exists().then((exists) {
+        if (!exists) {
+            dataDir.createSync();
+            print('Creating data directory.');
+        }
+    });
+
     print('Listening on localhost:${server.port}');
 
     await for (HttpRequest request in server) {

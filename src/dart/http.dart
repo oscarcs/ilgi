@@ -22,7 +22,7 @@ void handleRequest(HttpRequest request) {
 void handleGet(HttpRequest request) {
     final HttpResponse response = request.response;
     
-    String path = processPath(request.uri.path);
+    String path = processFilePath(request.uri.path);
     File file = new File(path);
 
     print('GET: ' + path);
@@ -45,10 +45,13 @@ void handleGet(HttpRequest request) {
 void handlePost(HttpRequest request) {
     final HttpResponse response = request.response;
 
+    String path = request.uri.path;
+    print('POST: ' + path);
+
 
 }
 
-String processPath(String path) {
+String processFilePath(String path) {
     if (path == '/') {
         path = '/index.html';
     }
