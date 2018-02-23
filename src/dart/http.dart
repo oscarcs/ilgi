@@ -33,11 +33,13 @@ void handleGet(HttpRequest request) {
             response.headers.contentType = getContentType(getExtension(path));
             file.openRead().pipe(response);
         }
+        // Redirect the browser to the root; let the client handle routing.
         else {
-            response.statusCode = 404;
-            response.headers.contentType = new ContentType('text', 'html');
-            response.write('<h1>404! Page not found!</h1>');
-            response.close();
+            path = processFilePath('/');
+            file = new File(path);
+            response.statusCode = HttpStatus.OK;
+            response.headers.contentType = getContentType(getExtension(path));
+            file.openRead().pipe(response);
         }
     });
 }
