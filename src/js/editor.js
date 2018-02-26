@@ -2,15 +2,10 @@ const editor = Vue.component('editor', {
     template: `
         <div>
             <h1>{{title}}</h1>
-            <textarea></textarea>
+            <textarea v-model="entry.text"></textarea>
+            <button v-on:click="save">Save</button>
         </div>
     `,
-
-    watch: {
-        '$route' () {
-            this.load();
-        }
-    },
 
     created: function() {
         this.load();
@@ -34,6 +29,10 @@ const editor = Vue.component('editor', {
             else {
                 //@@TODO: Set up for new entry.
             }
+        },
+
+        save: function() {
+            console.log('saving', this.entry.ID, this.entry.text);
         }
     },
 

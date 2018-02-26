@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'content_type.dart';
+import 'routes.dart';
 
 Directory root = new File(Platform.script.toFilePath()).parent;
 
@@ -22,26 +23,39 @@ void handleRequest(HttpRequest request) {
 void handleGet(HttpRequest request) {
     final HttpResponse response = request.response;
     
-    String path = processFilePath(request.uri.path);
-    File file = new File(path);
-
+    String path = request.uri.path;
     print('GET: ' + path);
 
-    file.exists().then((bool exists) {
-        if (exists) {
-            response.statusCode = HttpStatus.OK;
-            response.headers.contentType = getContentType(getExtension(path));
-            file.openRead().pipe(response);
-        }
-        // Redirect the browser to the root; let the client handle routing.
-        else {
-            path = processFilePath('/');
-            file = new File(path);
-            response.statusCode = HttpStatus.OK;
-            response.headers.contentType = getContentType(getExtension(path));
-            file.openRead().pipe(response);
-        }
-    });
+    if (validRoute(path)) {
+        var data = getRoute(path)();
+
+        response.statusCode = HttpStatus.OK;
+        response.headers.contentType = getContentType('json');
+        response
+            ..write(data)
+            ..close();
+    }
+    else {
+        path = processFilePath(path);
+        File file = new File(path);
+
+
+        file.exists().then((bool exists) {
+            if (exists) {
+                response.statusCode = HttpStatus.OK;
+                response.headers.contentType = getContentType(getExtension(path));
+                file.openRead().pipe(response);
+            }
+            // Redirect the browser to the root; let the client handle routing.
+            else {
+                path = processFilePath('/');
+                file = new File(path);
+                response.statusCode = HttpStatus.OK;
+                response.headers.contentType = getContentType(getExtension(path));
+                file.openRead().pipe(response);
+            }
+        });
+    }
 }
 
 void handlePost(HttpRequest request) {

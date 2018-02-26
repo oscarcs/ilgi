@@ -2,12 +2,15 @@ import 'dart:io';
 import 'dart:async';
 
 import 'dart/http.dart';
+import 'dart/routes.dart';
 
 Future main() async {
     var server = await HttpServer.bind(
         InternetAddress.LOOPBACK_IP_V4,
         8080,
     );
+
+    setupRoutes();
 
     // Create data directory relative to launch location.
     Directory dataDir = new Directory('./data');
