@@ -7,7 +7,7 @@ window.onload = function() {
         { path: '/', component: dashboard },
         { path: '/dashboard', component: dashboard },
         { path: '/edit', component: editor },
-        { path: '*', component: dashboard }
+        { path: '*', redirect: '/' }
     ]
 
     // Create the vue-router instance
