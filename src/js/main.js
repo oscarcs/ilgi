@@ -2,7 +2,8 @@ let app;
 const root = '';
 
 const api = {
-    getEntryList: '/entries/list' 
+    getEntryList: '/entries/list',
+    createEntry: '/entries/create'
 };
 
 window.onload = function() {

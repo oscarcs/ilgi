@@ -1,18 +1,18 @@
 List<Entry> entries = [];
+int nextID = -1;
 
 void initEntryList() {
     //@@TODO: scrape the /data directory and load entry IDs and metadata.
 
-    Entry a = new Entry();
-    a.ID = 0;
-    a.title = 'Lorem Ipsum';
+    addEntry('Lorem Ipsum');
+    addEntry('Dolor Sit Amet');
+}
 
-    Entry b = new Entry();
-    b.ID = 1;
-    b.title = 'Dolor Sit Amet';
-
-    entries.add(a);
-    entries.add(b);
+void addEntry(String title) {
+    Entry e = new Entry();
+    e.ID = ++nextID;
+    e.title = title;
+    entries.add(e);
 }
 
 class Entry {

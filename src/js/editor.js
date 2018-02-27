@@ -2,6 +2,7 @@ const editor = Vue.component('editor', {
     template: `
         <div>
             <h1>{{title}}</h1>
+            <input v-model="entry.title"></textarea>
             <textarea v-model="entry.text"></textarea>
             <button v-on:click="save">Save</button>
         </div>
@@ -32,7 +33,13 @@ const editor = Vue.component('editor', {
         },
 
         save: function() {
-            console.log('saving', this.entry.ID, this.entry.text);
+            if (this.entry.title === '' || this.entry.text === '') {
+                return;
+            }
+
+            postJSON(api.createEntry, this.entry).then(response => {
+                console.log(response);
+            })
         }
     },
 
@@ -40,7 +47,8 @@ const editor = Vue.component('editor', {
         return {
             entry: {
                 ID: -1,
-                text: ''
+                title: '',
+                text: '',
             },
         }
     },
