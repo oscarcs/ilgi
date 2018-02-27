@@ -1,6 +1,10 @@
 let app;
 const root = '';
 
+const api = {
+    getEntryList: '/entries/list' 
+};
+
 window.onload = function() {
 
     const routes = [
@@ -22,7 +26,7 @@ window.onload = function() {
         router: router
     });
 
-    getJSON('/entries/get').then(response => console.log(response));
+    getJSON('/entries/list').then(response => console.log(response));
 }
 
 // GET some JSON data; uses Fetch internally.

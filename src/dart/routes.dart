@@ -1,12 +1,20 @@
-
+import 'data_store.dart';
 
 Map<String, Function> routes = {};
 
 void setupRoutes() {
-    addRoute('/entries/get', () => '{ "1": "test", "2": "Hello, World!" }');
+    addRoute('/entries/list', () {
+        String str = '[';
+        for (Entry entry in entries) {
+            str += '{"ID":${entry.ID},"title":"${entry.title}"},';
+        }
+        str = str.substring(0, str.length - 1);
+        str += ']';
+        return str;
+    });
 }
 
-void addRoute(String path, Function handler) {
+void addRoute(String path, String handler()) {
     routes[path] = handler;
 }
 
