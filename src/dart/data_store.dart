@@ -1,4 +1,4 @@
-List<Entry> entries = [];
+Map<int, Entry> entries = {};
 int nextID = -1;
 
 void initEntryList() {
@@ -12,7 +12,15 @@ void addEntry(String title) {
     Entry e = new Entry();
     e.ID = ++nextID;
     e.title = title;
-    entries.add(e);
+    entries[e.ID] = e;
+}
+
+Entry getEntry(int ID) {
+    return entries[ID];
+}
+
+List<Entry> getEntries() {
+    return entries.values;
 }
 
 class Entry {

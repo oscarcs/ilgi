@@ -28,10 +28,12 @@ Future handleGet(HttpRequest request) async {
     String path = request.uri.path;
     print('GET: ' + path);
 
-    if (validRoute(path)) {
+    Route route = parseRoute(path);
+
+    if (validRoute(route)) {
         String content = await request.transform(UTF8.decoder).join();
 
-        var data = getRoute(path)(content);
+        var data = getRoute(path)(path, content);
 
         response.statusCode = HttpStatus.OK;
         response.headers.contentType = getContentType('json');
@@ -70,7 +72,7 @@ Future handlePost(HttpRequest request) async {
     if (validRoute(path)) {
         String content = await request.transform(UTF8.decoder).join();
         
-        var data = getRoute(path)(content);
+        var data = getRoute(path)(path, content);
 
         response.statusCode = HttpStatus.OK;
         response.headers.contentType = getContentType('json');
