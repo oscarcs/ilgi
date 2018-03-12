@@ -1,5 +1,9 @@
+package ilgi;
+
+import ilgi.core.Core;
+
 public class Ilgi {
     public static void main(String[] args) {
-        System.out.println("Hello, World!");
+        
     }
 }

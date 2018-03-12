@@ -1,3 +1,4 @@
+rm -rf ./bin &&
 mkdir -p ./bin && 
-javac src/*.java -d ./bin &&
-java -cp bin Ilgi 
+javac -sourcepath ./src -d ./bin src/ilgi/Ilgi.java &&
+java -cp ./bin ilgi.Ilgi 
