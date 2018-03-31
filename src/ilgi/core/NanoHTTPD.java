@@ -490,7 +490,7 @@ public abstract class NanoHTTPD {
 
         private final String contentTypeHeader;
         private final String contentType;
-        private final String encoding;`
+        private final String encoding;
         private final String boundary;
 
         public ContentType(String contentTypeHeader) {
