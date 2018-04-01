@@ -15,4 +15,9 @@ public abstract class Module implements Runnable {
      * Entry point of the module's thread.
      */
     public abstract void run();
+
+    /**
+     * Clean up when server is stopped.
+     */
+    public abstract void stop();
 }

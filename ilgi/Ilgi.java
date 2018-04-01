@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.MalformedURLException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 public class Ilgi {
     
@@ -21,17 +22,36 @@ public class Ilgi {
     }
 
     private String executionDir = System.getProperty("user.dir");
+    private ArrayList<Module> localModules = new ArrayList<Module>();
 
     public Ilgi() {
         System.out.println("Starting Ilgi...");
+
         searchClassesInFolder("/bin");
+
+        System.out.println("Press enter to stop Ilgi.");
+
+        try {
+            System.in.read();
+        } 
+        catch (Throwable ignored) {
+            
+        }
+
+        stop();
+    }
+
+    public void stop() {
+        for (Module m : localModules) {
+            m.stop();
+        }
     }
 
     /**
      * Search the given directory, relative to the execution directory, for .class modules
      * in a subdirectory with the correct package (ilgi.module.*). 
      */
-    public void searchClassesInFolder(String dir) {
+    protected void searchClassesInFolder(String dir) {
         System.out.println("Searching for modules in '" + executionDir + dir + "'.");
 
         Path path = Paths.get(executionDir + dir);
@@ -72,7 +92,9 @@ public class Ilgi {
                     try {
                         Class<?> c = classLoader.loadClass(classes[i]);
                         Constructor<?> constructor = c.getConstructor();  
-                        Object obj = constructor.newInstance();   
+                        
+                        Module module = (Module) constructor.newInstance(); 
+                        localModules.add(module);
                     }
                     catch (Exception e) {
                         System.out.println("Failed to create instance of '" + classes[i] + "'.");

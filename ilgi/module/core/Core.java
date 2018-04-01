@@ -5,6 +5,8 @@ import java.io.IOException;
 
 public class Core extends Module {
 
+    private NanoHTTPD server; 
+
     public Core() {
     }
 
@@ -12,29 +14,23 @@ public class Core extends Module {
         startServer(CoreServer.class);
     }
 
-    public static <T extends NanoHTTPD> void startServer(Class<T> serverClass) {
+    public void stop() {
+        server.stop();
+        System.out.println("[CORE] Server stopped.");
+    }
+
+    public <T extends NanoHTTPD> void startServer(Class<T> serverClass) {
         try {
-            NanoHTTPD server = serverClass.newInstance();
+            server = serverClass.newInstance();
 
             try {
                 server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
             }
             catch (IOException ioe) {
-                System.err.println("Couldn't start server:\n" + ioe);
-                System.exit(-1);
+                System.err.println("[CORE] Couldn't start server:\n" + ioe);
             }
 
-            System.out.println("Server started, press enter to stop.");
-
-            try {
-                System.in.read();
-            } 
-            catch (Throwable ignored) {
-                
-            }
-
-            server.stop();
-            System.out.println("Server stopped.");
+            System.out.println("[CORE] Server started.");
         } 
         catch (Exception e) {
 
