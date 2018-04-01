@@ -1,37 +1,40 @@
 package ilgi.core;
 
+import ilgi.Module;
 import java.io.IOException;
 
-public class Core {
+public class Core extends Module {
+
     public Core() {
-        run(CoreServer.class);
     }
 
-    public static void executeInstance(NanoHTTPD server) {
-        try {
-            server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-        }
-        catch (IOException ioe) {
-            System.err.println("Couldn't start server:\n" + ioe);
-            System.exit(-1);
-        }
-
-        System.out.println("Server started, Hit Enter to stop.\n");
-
-        try {
-            System.in.read();
-        } 
-        catch (Throwable ignored) {
-            
-        }
-
-        server.stop();
-        System.out.println("Server stopped.\n");
+    public void run() {
+        startServer(CoreServer.class);
     }
 
-    public static <T extends NanoHTTPD> void run(Class<T> serverClass) {
+    public static <T extends NanoHTTPD> void startServer(Class<T> serverClass) {
         try {
-            executeInstance(serverClass.newInstance());
+            NanoHTTPD server = serverClass.newInstance();
+
+            try {
+                server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+            }
+            catch (IOException ioe) {
+                System.err.println("Couldn't start server:\n" + ioe);
+                System.exit(-1);
+            }
+
+            System.out.println("Server started, press enter to stop.");
+
+            try {
+                System.in.read();
+            } 
+            catch (Throwable ignored) {
+                
+            }
+
+            server.stop();
+            System.out.println("Server stopped.");
         } 
         catch (Exception e) {
 
