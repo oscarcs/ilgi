@@ -1,4 +1,4 @@
-package ilgi.core;
+package ilgi.module.core;
 
 /*
  * #%L
@@ -94,8 +94,8 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import ilgi.core.NanoHTTPD.Response.IStatus;
-import ilgi.core.NanoHTTPD.Response.Status;
+import ilgi.module.core.NanoHTTPD.Response.IStatus;
+import ilgi.module.core.NanoHTTPD.Response.Status;
 
 /**
  * A simple, tiny, nicely embeddable HTTP server in Java

@@ -1,4 +1,4 @@
-package ilgi.core;
+package ilgi.module.core;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.List;
 
-import ilgi.core.NanoHTTPD.Response;
-import ilgi.core.NanoHTTPD.Response.Status;
+import ilgi.module.core.NanoHTTPD.Response;
+import ilgi.module.core.NanoHTTPD.Response.Status;
 
 public class CoreServer extends NanoHTTPD {
 

@@ -1,7 +1,5 @@
 package ilgi;
 
-import ilgi.core.Core;
-
 public class Ilgi {
     
     /**
@@ -14,7 +12,7 @@ public class Ilgi {
     private String executionDir = System.getProperty("user.dir");
 
     public Ilgi() {
-        new Core();  
+        System.out.println("Starting Ilgi...");
     }
 
 

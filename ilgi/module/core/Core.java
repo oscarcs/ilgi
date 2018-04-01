@@ -1,4 +1,4 @@
-package ilgi.core;
+package ilgi.module.core;
 
 import ilgi.Module;
 import java.io.IOException;
