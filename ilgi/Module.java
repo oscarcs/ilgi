@@ -7,6 +7,8 @@ public abstract class Module implements Runnable {
     public Module() {
         runner = new Thread(this);
         runner.start();
+
+        System.out.println("Created instance of module '" + this.getClass().getName() + "'");
     }
 
     /**
