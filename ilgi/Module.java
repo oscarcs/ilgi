@@ -1,14 +1,21 @@
 package ilgi;
 
+import java.util.logging.Logger;
+
 public abstract class Module implements Runnable {
     
-    private Thread runner;
+    protected Thread runner;
+    protected String name;
+    protected Logger logger;
 
     public Module() {
         runner = new Thread(this);
         runner.start();
 
-        System.out.println("Created instance of module '" + this.getClass().getName() + "'");
+        name = this.getClass().getName();
+
+        logger = Logger.getLogger(name);
+        logger.info("Creating instance of module '" + name + "'.");
     }
 
     /**

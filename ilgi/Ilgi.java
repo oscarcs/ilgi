@@ -25,11 +25,11 @@ public class Ilgi {
     private ArrayList<Module> localModules = new ArrayList<Module>();
 
     public Ilgi() {
-        System.out.println("Starting Ilgi...");
+        System.out.println("\nStarting Ilgi...\n");
 
         searchClassesInFolder("/bin");
 
-        System.out.println("Press enter to stop Ilgi.");
+        System.out.println("\nPress enter to stop Ilgi.\n");
 
         try {
             System.in.read();

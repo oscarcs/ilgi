@@ -16,7 +16,7 @@ public class Core extends Module {
 
     public void stop() {
         server.stop();
-        System.out.println("[CORE] Server stopped.");
+        logger.info("Server stopped.");
     }
 
     public <T extends NanoHTTPD> void startServer(Class<T> serverClass) {
@@ -27,10 +27,10 @@ public class Core extends Module {
                 server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
             }
             catch (IOException ioe) {
-                System.err.println("[CORE] Couldn't start server:\n" + ioe);
+                logger.severe("Couldn't start server:\n" + ioe);
             }
 
-            System.out.println("[CORE] Server started.");
+            logger.info("Server started.");
         } 
         catch (Exception e) {
 
