@@ -8,6 +8,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URI;
 import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.ServerSocket;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -33,18 +35,30 @@ public class Ilgi {
         localModules = new ArrayList<Module>();
         logger = Logger.getLogger(this.getClass().getName());
 
+        // @@TODO: Load settings:
+
+        // Look for modules:
         searchClassesInFolder("/bin");
 
-        System.out.println("\nPress enter to stop Ilgi.\n");
-
-        try {
-            System.in.read();
-        } 
-        catch (Throwable ignored) {
-            
-        }
+        // Create and maintain a thread:
+        runSocket();
 
         stop();
+    }
+
+    /**
+     * Create a server socket.
+     */
+    public void runSocket() {
+        ServerSocket incoming = new ServerSocket();
+
+        while (true) {
+            Socket peer = incoming.accept();
+            DataInputStream is = new DataInputStream(peer.getInputStream());
+            String input = is.readUTF();
+
+            System.out.println(input);
+        }
     }
 
     /**
