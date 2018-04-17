@@ -7,9 +7,6 @@ public class Core extends Module {
 
     private NanoHTTPD server; 
 
-    public Core() {
-    }
-
     public void run() {
         startServer(CoreServer.class);
     }

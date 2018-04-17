@@ -1,6 +1,9 @@
 package ilgi;
 
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
@@ -50,14 +53,28 @@ public class Ilgi {
      * Create a server socket.
      */
     public void runSocket() {
-        ServerSocket incoming = new ServerSocket();
-
-        while (true) {
-            Socket peer = incoming.accept();
-            DataInputStream is = new DataInputStream(peer.getInputStream());
-            String input = is.readUTF();
-
-            System.out.println(input);
+        try ( 
+            ServerSocket server = new ServerSocket(10789);
+            Socket client = server.accept();
+            
+            PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+            
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(client.getInputStream())
+            );
+        ) {
+            String inputLine;
+ 
+            while (true) {
+                inputLine = in.readLine();
+                System.out.println("message: " + inputLine);
+                if (inputLine.equals("END")) {
+                    break;
+                }
+            }
+        } 
+        catch (Exception e) {
+            System.out.println(e);
         }
     }
 
@@ -68,6 +85,8 @@ public class Ilgi {
         for (Module m : localModules) {
             m.stop();
         }
+
+        System.exit(0);
     }
 
     /**

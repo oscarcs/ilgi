@@ -8,9 +8,9 @@ public abstract class Module implements Runnable {
     protected String name;
     protected Logger logger;
     protected int modulePort;
-    protected int hostPort;
+    protected int serverPort;
 
-    public Module(int srcPort, int destPort) {
+    public Module() {
         runner = new Thread(this);
         runner.start();
 
@@ -19,19 +19,12 @@ public abstract class Module implements Runnable {
         logger = Logger.getLogger(name);
         logger.info("Creating instance of module '" + name + "'.");
 
-        this.modulePort = modulePort;
-        this.hostPort = hostPort;
+        // this.modulePort = modulePort;
+        this.serverPort = 10789;
     }
 
     public void broadcast(String s) {
-        try {
-            Socket s = new Socket(null, hostPort);
-            DataOutputStream os = new DataOutputStream(s.getOutputStream());
-            os.writeUTF(s);
-        }
-        catch (Exception e) {
-            
-        }
+
     }
 
     /**
