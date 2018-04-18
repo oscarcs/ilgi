@@ -9,6 +9,8 @@ public class Core extends Module {
 
     public void run() {
         startServer(CoreServer.class);
+
+        connect();
     }
 
     public void stop() {

@@ -17,6 +17,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Ilgi {
     
@@ -44,37 +46,65 @@ public class Ilgi {
         searchClassesInFolder("/bin");
 
         // Create and maintain a thread:
-        runSocket();
+        runServer();
 
         stop();
     }
 
-    /**
-     * Create a server socket.
-     */
-    public void runSocket() {
-        try ( 
-            ServerSocket server = new ServerSocket(10789);
-            Socket client = server.accept();
-            
-            PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-            
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(client.getInputStream())
-            );
-        ) {
-            String inputLine;
- 
+    private void runServer() {
+        ExecutorService threadPool = Executors.newFixedThreadPool(10); 
+
+        ServerSocket serverSocket;
+
+        try {
+            serverSocket = new ServerSocket(10789);
             while (true) {
-                inputLine = in.readLine();
-                System.out.println("message: " + inputLine);
-                if (inputLine.equals("END")) {
-                    break;
+                Socket clientSocket;
+                try {
+                    clientSocket = serverSocket.accept();
+                    threadPool.execute(new RequestHandler(clientSocket));
+                } 
+                catch (Exception e) {
+                    System.out.println(e);
                 }
             }
-        } 
+        }
         catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Can't start server.");
+        }
+    }
+
+    class RequestHandler implements Runnable {
+
+        private Socket socket;
+
+        public RequestHandler(Socket socket) {
+            this.socket = socket;
+        }
+
+        public void run() {
+            try (
+                BufferedReader in = new BufferedReader(
+                    new InputStreamReader(this.socket.getInputStream())
+                );
+                PrintWriter out = new PrintWriter(this.socket.getOutputStream(), true);
+            ) {
+
+                String inputLine;
+                while (true) {
+                    inputLine = in.readLine();
+                    System.out.println("message: " + inputLine);
+                    if (inputLine.equals("END")) {
+                        break;
+                    }
+                    else {
+                        out.println("ACK");
+                    }
+                }
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
         }
     }
 
