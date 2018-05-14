@@ -18,6 +18,9 @@ public class Core extends Module {
         logger.info("Server stopped.");
     }
 
+    /**
+     * Start the core webserver on a new thread.
+     */
     public <T extends NanoHTTPD> void startServer(Class<T> serverClass) {
         try {
             server = serverClass.newInstance();

@@ -12,7 +12,7 @@ import ilgi.module.core.NanoHTTPD.Response.Status;
 
 public class CoreServer extends NanoHTTPD {
 
-    private boolean loggingOn = true;
+    private boolean loggingEnabled = true;
     private String base = System.getProperty("user.dir");
 
     public CoreServer() {
@@ -28,7 +28,7 @@ public class CoreServer extends NanoHTTPD {
         String uri = session.getUri();
         Method method = session.getMethod();
 
-        if (loggingOn) {
+        if (loggingEnabled) {
             System.out.println(method + ": '" + uri + "'");
         }
 
@@ -38,11 +38,12 @@ public class CoreServer extends NanoHTTPD {
         }
         // Otherwise, do a normal response:
         else {
-            // Ensure clients can't escape the sandbox:
+            // Ensure clients can't retrieve arbitrary files:
             if (uri.contains("../")) {
                 return forbiddenResponse("Forbidden.");
             }
 
+            //
             if (canServeUri(uri)) {
                 File file = new File(base, uri);
                 String mime = getMimeTypeForFile(uri); 
@@ -56,10 +57,14 @@ public class CoreServer extends NanoHTTPD {
         return r != null ? r : notFoundResponse("Not found.");
     }
 
+    /**
+     * Respond to a request with with a file.
+     */
     private Response fileResponse(String uri, Map<String, String> headers, File file, String mime) {
         Response r = null;
 
         try {
+            // Create an ETag in order to perform cache validation.
             String etag = Integer.toHexString(
                 (file.getAbsolutePath() + file.lastModified() + "" + file.length()).hashCode()
             );
@@ -87,9 +92,13 @@ public class CoreServer extends NanoHTTPD {
         return r;
     } 
 
+    /**
+     * Check that the file at [URI] can in fact be served.
+    */
     private boolean canServeUri(String uri) {
         boolean canServeUri = false;
 
+        // At the moment we just check that the file exists:
         File f = new File(base, uri);
         canServeUri = f.exists();
 

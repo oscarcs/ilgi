@@ -1,7 +1,9 @@
 package ilgi;
 
 import java.net.Socket;
+import java.io.Writer;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.util.logging.Logger;
@@ -29,27 +31,22 @@ public abstract class Module implements Runnable {
 
     protected void connect() {
         try (
-            Socket socket = new Socket("localhost", 10789);
+            Socket socket = new Socket("localhost", serverPort);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(
                 new InputStreamReader(socket.getInputStream())
             );
-            BufferedReader stdIn = new BufferedReader(
-                new InputStreamReader(System.in)
-            );
         )
         {
-            while (true) {
-                out.println(name);
-                // Wait for acknowledgement
-                String response = in.readLine();
-
-                Thread.sleep(1000);
-            }
+            handleConnection(in, out);
         }
         catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    protected void handleConnection(Reader in, Writer out) {
+        
     }
 
     /**
