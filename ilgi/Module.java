@@ -1,12 +1,16 @@
 package ilgi;
 
-import java.net.Socket;
+import java.util.logging.Logger;
+
+import java.io.IOException;
 import java.io.Writer;
-import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.PrintWriter;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import java.util.logging.Logger;
+
+import java.net.Socket;
+import java.net.ConnectException;
 
 public abstract class Module implements Runnable {
     
@@ -25,28 +29,50 @@ public abstract class Module implements Runnable {
         logger = Logger.getLogger(name);
         logger.info("Creating instance of module '" + name + "'.");
 
-        // this.modulePort = modulePort;
         this.serverPort = 10789;
     }
 
     protected void connect() {
-        try (
-            Socket socket = new Socket("localhost", serverPort);
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(socket.getInputStream())
-            );
-        )
-        {
-            handleConnection(in, out);
-        }
-        catch (Exception e) {
-            System.out.println(e);
+        
+        // Try 3 times to connect.
+        for (int attempts = 3; attempts > 0; attempts--) {
+            try {
+                Socket socket = new Socket("localhost", serverPort);
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream()
+                ));
+                
+                // Send the name of this module. If that was successful, prevent connection retries.
+                out.println(name);
+                attempts = 0;
+
+                handleConnection(in, out);
+
+                // socket.close();
+            }
+            catch (ConnectException e) {
+                // Ignore the 'connection refused' message and try again.
+                // There may be other relevant exception messages that need adding here.
+                if (e.getMessage().equals("Connection refused (Connection refused)")) {
+                    // Print the number of attempts remaining after this one.
+                    logger.info("Connection failed (" + name + "). " + 
+                        (attempts - 1) + " attempts remaining.");
+                }
+                else {
+                    logger.severe(e.toString());
+                    break;
+                }
+            }
+            catch (Exception e) {
+                logger.severe("Socket on module '" + name + "': " + e.toString());
+            }
         }
     }
 
-    protected void handleConnection(Reader in, Writer out) {
-        
+    protected void handleConnection(BufferedReader in, PrintWriter out) throws Exception {
+        Thread.sleep(2000);
+        out.println("lol " + name);
     }
 
     /**

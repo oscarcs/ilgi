@@ -1,20 +1,25 @@
 package ilgi;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URI;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import java.net.SocketException;
+
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.concurrent.ExecutorService;
@@ -62,10 +67,10 @@ public class Ilgi {
                 Socket clientSocket;
                 try {
                     clientSocket = serverSocket.accept();
-                    threadPool.execute(new RequestHandler(clientSocket));
+                    threadPool.execute(new RequestHandler(clientSocket, logger));
                 } 
                 catch (Exception e) {
-                    System.out.println(e);
+                    logger.severe(e.toString()); 
                 }
             }
         }
@@ -77,33 +82,41 @@ public class Ilgi {
     class RequestHandler implements Runnable {
 
         private Socket socket;
+        private Logger logger;
 
-        public RequestHandler(Socket socket) {
+        public RequestHandler(Socket socket, Logger logger) {
             this.socket = socket;
+            this.logger = logger;
         }
 
         public void run() {
             try (
                 BufferedReader in = new BufferedReader(
-                    new InputStreamReader(this.socket.getInputStream())
+                    new InputStreamReader(this.socket.getInputStream()), 1000
                 );
                 PrintWriter out = new PrintWriter(this.socket.getOutputStream(), true);
             ) {
 
-                String inputLine;
+                String inputLine = "";
                 while (true) {
+                    if (socket.isClosed()) { }
+
                     inputLine = in.readLine();
+                    if (inputLine == null) break;
+
                     System.out.println("message: " + inputLine);
-                    if (inputLine.equals("END")) {
-                        break;
-                    }
-                    else {
-                        out.println("ACK");
-                    }
+                }
+            }
+            catch (SocketException e) {
+                if (e.getMessage().equals("Connection reset")) {
+                    logger.info("Connection closed.");
+                }
+                else {
+                    logger.severe(e.toString());
                 }
             }
             catch (Exception e) {
-                System.out.println(e);
+                logger.severe(e.toString());
             }
         }
     }
