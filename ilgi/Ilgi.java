@@ -22,6 +22,12 @@ import java.net.SocketException;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import java.util.logging.LogManager;
+import java.util.logging.Handler;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
+import java.util.logging.Level;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -46,6 +52,13 @@ public class Ilgi {
         executionDir = System.getProperty("user.dir");
         localModules = new ArrayList<Module>();
         logger = Logger.getLogger(this.getClass().getName());
+
+        LogManager.getLogManager().reset();
+
+        Logger baseLogger = Logger.getLogger("ilgi");
+        ConsoleHandler handler = new ConsoleHandler();
+        handler.setFormatter(new IlgiFormatter());
+        baseLogger.addHandler(handler);
 
         // @@TODO: Load settings:
 
@@ -111,7 +124,7 @@ public class Ilgi {
                     inputLine = in.readLine();
                     if (inputLine == null) break;
 
-                    System.out.println("\n\tmessage: " + inputLine + "\n");
+                    logger.info("Message: " + inputLine);
                 }
             }
             catch (SocketException e) {
@@ -204,5 +217,33 @@ public class Ilgi {
      */
     protected void runRemoteModules() {
 
+    }
+
+    public class IlgiFormatter extends Formatter {
+
+        public static final String ANSI_RESET = "\u001B[0m";
+        public static final String ANSI_BLACK = "\u001B[30m";
+        public static final String ANSI_RED = "\u001B[31m";
+        public static final String ANSI_GREEN = "\u001B[32m";
+        public static final String ANSI_YELLOW = "\u001B[33m";
+        public static final String ANSI_BLUE = "\u001B[34m";
+        public static final String ANSI_PURPLE = "\u001B[35m";
+        public static final String ANSI_CYAN = "\u001B[36m";
+        public static final String ANSI_WHITE = "\u001B[37m";
+
+        @Override
+        public String format(LogRecord record) {
+            String output = record.getLevel() + ": " + record.getMessage() + "\n";
+
+            if (record.getLevel() == Level.SEVERE) {
+                output = ANSI_RED + output + ANSI_RESET;
+            }
+
+            if (record.getLevel() == Level.WARNING) {
+                output = ANSI_YELLOW + output + ANSI_RESET;
+            }
+
+            return output;
+        } 
     }
 }

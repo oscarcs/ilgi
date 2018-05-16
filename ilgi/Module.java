@@ -49,15 +49,20 @@ public abstract class Module implements Runnable {
 
                 handleConnection(in, out);
 
-                // socket.close();
+                socket.close();
             }
             catch (ConnectException e) {
                 // Ignore the 'connection refused' message and try again.
                 // There may be other relevant exception messages that need adding here.
                 if (e.getMessage().equals("Connection refused (Connection refused)")) {
-                    // Print the number of attempts remaining after this one.
-                    logger.info("Connection failed (" + name + "). " + 
-                        (attempts - 1) + " attempts remaining.");
+                    if (attempts - 1 > 0) {
+                        // Print the number of attempts remaining after this one.
+                        logger.warning("Connection failed (" + name + "). " + 
+                            (attempts - 1) + " attempts remaining.");
+                    }
+                    else {
+                        logger.severe("Connection failed (" + name + "). ");
+                    }
                 }
                 else {
                     logger.severe(e.toString());
@@ -71,7 +76,7 @@ public abstract class Module implements Runnable {
     }
 
     protected void handleConnection(BufferedReader in, PrintWriter out) throws Exception {
-        
+
     }
 
     /**
