@@ -35,8 +35,10 @@ public class Ilgi {
     }
 
     private String executionDir;
-    private ArrayList<Module> localModules;
     private Logger logger;
+    
+    // List of the locally-running modules.
+    private ArrayList<Module> localModules;
 
     public Ilgi() {
         System.out.println("\nStarting Ilgi...\n");
@@ -48,15 +50,19 @@ public class Ilgi {
         // @@TODO: Load settings:
 
         // Look for modules:
-        searchClassesInFolder("/bin");
+        runLocalModules("/bin");
 
-        // Create and maintain a thread:
+        // Create and maintain a thread to handle requests from modules:
         runServer();
 
         stop();
     }
 
+    /**
+     * The Ilgi 'server' handles incoming socket connections from modules.
+     */
     private void runServer() {
+        // Create a thread pool to handle requests.
         ExecutorService threadPool = Executors.newFixedThreadPool(10); 
 
         ServerSocket serverSocket;
@@ -79,6 +85,9 @@ public class Ilgi {
         }
     }
 
+    /**
+     * The RequestHandler gets created to handle requests from an incoming socket connection.
+     */
     class RequestHandler implements Runnable {
 
         private Socket socket;
@@ -99,12 +108,10 @@ public class Ilgi {
 
                 String inputLine = "";
                 while (true) {
-                    if (socket.isClosed()) { }
-
                     inputLine = in.readLine();
                     if (inputLine == null) break;
 
-                    System.out.println("message: " + inputLine);
+                    System.out.println("\n\tmessage: " + inputLine + "\n");
                 }
             }
             catch (SocketException e) {
@@ -135,8 +142,9 @@ public class Ilgi {
     /**
      * Search the given directory, relative to the execution directory, for .class modules
      * in a subdirectory with the correct package (ilgi.module.*). 
+     * Run these modules as local threads in this JVM.
      */
-    protected void searchClassesInFolder(String dir) {
+    protected void runLocalModules(String dir) {
         logger.info("Searching for modules in '" + executionDir + dir + "'.");
 
         Path path = Paths.get(executionDir + dir);
@@ -171,13 +179,15 @@ public class Ilgi {
                     }
                 }
 
-                // Load the classes:
+                // Load each of the classes in turn.
                 URLClassLoader classLoader = new URLClassLoader(urls);
                 for (int i = 0; i < classes.length; i++) {
                     try {
+                        // Try to load the class and then retrieve the constructor.
                         Class<?> c = classLoader.loadClass(classes[i]);
                         Constructor<?> constructor = c.getConstructor();  
                         
+                        // Construct a new instance of the module class.
                         Module module = (Module) constructor.newInstance(); 
                         localModules.add(module);
                     }
@@ -187,5 +197,12 @@ public class Ilgi {
                 }
             }
         }
+    }
+
+    /**
+     * @@TODO: Instruct a remote instance to load a module.
+     */
+    protected void runRemoteModules() {
+
     }
 }

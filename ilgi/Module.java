@@ -71,8 +71,7 @@ public abstract class Module implements Runnable {
     }
 
     protected void handleConnection(BufferedReader in, PrintWriter out) throws Exception {
-        Thread.sleep(2000);
-        out.println("lol " + name);
+        
     }
 
     /**
