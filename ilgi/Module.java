@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.io.Reader;
 import java.io.PrintWriter;
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import java.net.Socket;
 import java.net.ConnectException;
@@ -48,8 +48,6 @@ public abstract class Module implements Runnable {
                 attempts = 0;
 
                 handleConnection(in, out);
-
-                socket.close();
             }
             catch (ConnectException e) {
                 // Ignore the 'connection refused' message and try again.
@@ -75,7 +73,7 @@ public abstract class Module implements Runnable {
         }
     }
 
-    protected void handleConnection(BufferedReader in, PrintWriter out) throws Exception {
+    protected void handleConnection(BufferedReader in, PrintWriter out) {
 
     }
 
