@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 
 public class Journal extends Module {
     
+    private volatile String lastMessage = "";
     private volatile String message = "";
 
     public void run() {
@@ -46,12 +47,11 @@ public class Journal extends Module {
         }
         
         public void run() {
-            System.out.println("hello");
             while (true) {
-                out.println(message);
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) { }
+                if (!lastMessage.equals(message)) {
+                    out.println(message);
+                    lastMessage = message;
+                }
             }
         }
     }
