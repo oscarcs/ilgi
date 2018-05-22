@@ -11,6 +11,7 @@ public class Core extends Module {
         startServer(CoreServer.class);
 
         connect();
+        sendMessage("lol");
     }
 
     public void stop() {

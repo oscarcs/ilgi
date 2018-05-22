@@ -20,6 +20,9 @@ public abstract class Module implements Runnable {
     protected int modulePort;
     protected int serverPort;
 
+    private volatile String message = "";
+    private volatile Boolean newMessage = false;
+
     public Module() {
         runner = new Thread(this);
         runner.start();
@@ -38,16 +41,9 @@ public abstract class Module implements Runnable {
         for (int attempts = 3; attempts > 0; attempts--) {
             try {
                 Socket socket = new Socket("localhost", serverPort);
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(socket.getInputStream()
-                ));
-                
-                // Send the name of this module. If that was successful, prevent connection retries.
-                out.println(name);
                 attempts = 0;
 
-                handleConnection(in, out);
+                handleConnection(socket);
             }
             catch (ConnectException e) {
                 // Ignore the 'connection refused' message and try again.
@@ -73,8 +69,50 @@ public abstract class Module implements Runnable {
         }
     }
 
-    protected void handleConnection(BufferedReader in, PrintWriter out) {
+    /**
+     * Handle the connection to the Ilgi instance; this is a default implementation that can
+     * be overriden.
+     */
+    protected void handleConnection(Socket socket) {
+        try {
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()
+            ));
+            
+            new Thread(new RequestHandler(in, out)).start();
+        }
+        catch (IOException e) {
 
+        }
+
+    }
+
+    /**
+     * Send a message to the Ilgi instance.
+     */
+    protected void sendMessage(String msg) {
+        message = msg; 
+        newMessage = true;
+    }
+
+    protected class RequestHandler implements Runnable {
+        private BufferedReader in;
+        private PrintWriter out;
+
+        public RequestHandler(BufferedReader in, PrintWriter out) {
+            this.in = in;
+            this.out = out;
+        }
+        
+        public void run() {
+            while (true) {
+                if (newMessage) {
+                    out.println(message);
+                    newMessage = false;
+                }
+            }
+        }
     }
 
     /**
